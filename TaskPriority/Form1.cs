@@ -33,13 +33,15 @@ namespace TaskPriority
         public msexcel.Worksheet xlWorkSheet;
         public object missing;
         private bool re_load_flag;
+        private bool time_wasting;
 
         public TaskPriority()
         {
             InitializeComponent();
             missing = System.Reflection.Missing.Value;
             config_data.ConfigFile = Environment.GetEnvironmentVariable("USERPROFILE")+"\\IntCallBack.xls";
-            xlApp = new msexcel.Application();         
+            xlApp = new msexcel.Application();
+            time_wasting = false;
 
             if (File.Exists(config_data.ConfigFile))
             {
@@ -102,7 +104,7 @@ namespace TaskPriority
         {
             if (re_load_flag)
             {
-                int temp_index;
+               
                 string temp_string;
                 textBox1.Visible = textBox2.Visible = textBox3.Visible = textBox4.Visible = false;
                 button1.Text = config_data.task1;
@@ -140,6 +142,7 @@ namespace TaskPriority
             textBox1.Visible = true;
             BringFocusTimer.Stop();
             BringFocusTimer.Enabled = false;
+            time_wasting = false;
         }
 
         [DllImport("user32.dll")]
@@ -158,11 +161,28 @@ namespace TaskPriority
                 IntPtr f_handle = this.Handle;
                 FlashWindow(f_handle, false);
             }
-            TimeLeft.Value = TimeLeft.Value - config_data.RFrequency;
             button1.Size = new Size(281, 247);
             button1.BringToFront();
             update_conf_file();
-
+            if (time_wasting == false)
+            {
+                if ((TimeLeft.Value - config_data.RFrequency) <= 0)
+                {
+                    time_wasting = true;
+                    TimeLeft.Value = 0;
+                    TimeLeft.ForeColor = Color.Red;
+                    TipTimeLeft.ToolTipTitle = "Wasted";
+                }
+                else
+                {
+                    TimeLeft.Value = TimeLeft.Value - config_data.RFrequency;
+                }
+            }
+            else
+            {
+                TimeLeft.Maximum = TimeLeft.Value + config_data.RFrequency + 10;
+                TimeLeft.Value = TimeLeft.Value + config_data.RFrequency;
+            }
         }
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
@@ -276,6 +296,7 @@ namespace TaskPriority
             TimeLeft.Maximum = (config_data.Urgent_Hrs * 60) + config_data.Urgent_Mins;
             TimeLeft.Minimum = 0;
             TimeLeft.Value = TimeLeft.Maximum;
+            time_wasting = false;
             
         }
 
@@ -285,6 +306,7 @@ namespace TaskPriority
             TimeLeft.Maximum = (config_data.Urgent_Hrs * 60) + config_data.Urgent_Mins;
             TimeLeft.Minimum = 0;
             TimeLeft.Value = TimeLeft.Maximum;
+            time_wasting = false;
         }
 
         private void TaskPriority_FormClosing(object sender, FormClosingEventArgs e)
@@ -301,7 +323,14 @@ namespace TaskPriority
 
         private void TimeLeft_MouseHover(object sender, EventArgs e)
         {
-            TipTimeLeft.SetToolTip(TimeLeft, TimeLeft.Value.ToString() + " Mins");
+            if (time_wasting == false)
+            {
+                TipTimeLeft.SetToolTip(TimeLeft, TimeLeft.Value.ToString() + " Mins");
+            }
+            else
+            {
+                TipTimeLeft.SetToolTip(TimeLeft, "-" + TimeLeft.Value.ToString() + " Mins");
+            }
         }
                        
     }

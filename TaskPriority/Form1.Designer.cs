@@ -329,9 +329,11 @@
             // 
             // TimeLeft
             // 
+            this.TimeLeft.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.TimeLeft.Location = new System.Drawing.Point(70, 137);
-            this.TimeLeft.MarqueeAnimationSpeed = 5;
+            this.TimeLeft.MarqueeAnimationSpeed = 2;
             this.TimeLeft.Name = "TimeLeft";
+            this.TimeLeft.RightToLeftLayout = true;
             this.TimeLeft.Size = new System.Drawing.Size(118, 23);
             this.TimeLeft.Step = 1;
             this.TimeLeft.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
@@ -469,7 +471,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(377, 346);
             this.Controls.Add(this.tabControl1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "TaskPriority";
